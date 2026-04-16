@@ -20,7 +20,7 @@ jobs:
         -target:library `
         -out:GrappleMod.dll `
         -reference:Assembly-CSharp.dll `
-        -reference:bepinex/BepInEx/core/BepInEx.dll `
+        -reference:bepinex/BepInEx_x64/BepInEx/core/BepInEx.dll `
         GrappleMod.cs
 
     - name: Upload DLL
