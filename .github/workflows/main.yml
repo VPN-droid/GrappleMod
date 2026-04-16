@@ -14,13 +14,18 @@ jobs:
         curl -L -o bepinex.zip https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.2/BepInEx_x64_5.4.23.2.zip
         powershell -Command "Expand-Archive bepinex.zip -DestinationPath bepinex"
 
+    - name: Find BepInEx.dll
+      run: |
+        Get-ChildItem -Recurse -Filter BepInEx.dll | ForEach-Object { $_.FullName } > path.txt
+
     - name: Compile DLL with real references
       run: |
+        $bep = Get-Content path.txt
         & "C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe" `
         -target:library `
         -out:GrappleMod.dll `
         -reference:Assembly-CSharp.dll `
-        -reference:bepinex/BepInEx_x64/BepInEx/core/BepInEx.dll `
+        -reference:$bep `
         GrappleMod.cs
 
     - name: Upload DLL
