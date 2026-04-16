@@ -9,11 +9,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Download BepInEx
-      run: |
-        curl -L -o bepinex.zip https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.2/BepInEx_x64_5.4.23.2.zip
-        powershell -Command "Expand-Archive bepinex.zip -DestinationPath bepinex"
-
     - name: Create dummy UnityEngine
       run: |
         echo public class MonoBehaviour {} > UnityEngine.cs
@@ -23,7 +18,7 @@ jobs:
 
     - name: Compile DLL
       run: |
-        "C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe" -target:library -out:GrappleMod.dll GrappleMod.cs UnityEngine.cs
+        & "C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe" -target:library -out:GrappleMod.dll GrappleMod.cs UnityEngine.cs
 
     - name: Upload DLL
       uses: actions/upload-artifact@v4
