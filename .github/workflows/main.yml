@@ -9,21 +9,43 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Create dummy UnityEngine
+    - name: Create UnityEngine.cs
       run: |
-        echo namespace UnityEngine { > UnityEngine.cs
-        echo public class MonoBehaviour {} >> UnityEngine.cs
-        echo public static class Input { public static bool GetMouseButtonDown(int x) { return false; } } >> UnityEngine.cs
-        echo public static class Time { public static float time = 0f; } >> UnityEngine.cs
-        echo public static class Debug { public static void Log(string s) {} } >> UnityEngine.cs
-        echo } >> UnityEngine.cs
+        @"
+        namespace UnityEngine
+        {
+            public class MonoBehaviour { }
 
-    - name: Create dummy BepInEx
+            public static class Input
+            {
+                public static bool GetMouseButtonDown(int x) { return false; }
+            }
+
+            public static class Time
+            {
+                public static float time = 0f;
+            }
+
+            public static class Debug
+            {
+                public static void Log(string s) { }
+            }
+        }
+        "@ | Out-File -Encoding utf8 UnityEngine.cs
+
+    - name: Create BepInEx.cs
       run: |
-        echo namespace BepInEx { > BepInEx.cs
-        echo public class BaseUnityPlugin : UnityEngine.MonoBehaviour {} >> BepInEx.cs
-        echo public class BepInPlugin : System.Attribute { public BepInPlugin(string a,string b,string c) {} } >> BepInEx.cs
-        echo } >> BepInEx.cs
+        @"
+        namespace BepInEx
+        {
+            public class BaseUnityPlugin : UnityEngine.MonoBehaviour { }
+
+            public class BepInPlugin : System.Attribute
+            {
+                public BepInPlugin(string a, string b, string c) { }
+            }
+        }
+        "@ | Out-File -Encoding utf8 BepInEx.cs
 
     - name: Compile DLL
       run: |
