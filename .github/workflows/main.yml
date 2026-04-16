@@ -1,4 +1,4 @@
-name: Build Grapple Mod
+name: Build REAL Grapple Mod
 
 on: [push]
 
@@ -9,52 +9,13 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Create UnityEngine.cs
+    - name: Compile DLL with real game references
       run: |
-        @"
-        namespace UnityEngine
-        {
-            public class Object
-            {
-                public static T[] FindObjectsOfType<T>() { return new T[0]; }
-            }
-
-            public class MonoBehaviour : Object { }
-
-            public static class Input
-            {
-                public static bool GetMouseButtonDown(int x) { return false; }
-            }
-
-            public static class Time
-            {
-                public static float time = 0f;
-            }
-
-            public static class Debug
-            {
-                public static void Log(string s) { }
-            }
-        }
-        "@ | Out-File -Encoding utf8 UnityEngine.cs
-
-    - name: Create BepInEx.cs
-      run: |
-        @"
-        namespace BepInEx
-        {
-            public class BaseUnityPlugin : UnityEngine.MonoBehaviour { }
-
-            public class BepInPlugin : System.Attribute
-            {
-                public BepInPlugin(string a, string b, string c) { }
-            }
-        }
-        "@ | Out-File -Encoding utf8 BepInEx.cs
-
-    - name: Compile DLL
-      run: |
-        & "C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe" -target:library -out:GrappleMod.dll GrappleMod.cs UnityEngine.cs BepInEx.cs
+        & "C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe" `
+        -target:library `
+        -out:GrappleMod.dll `
+        -reference:Assembly-CSharp.dll `
+        GrappleMod.cs
 
     - name: Upload DLL
       uses: actions/upload-artifact@v4
