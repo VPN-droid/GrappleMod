@@ -9,12 +9,18 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Compile DLL with real game references
+    - name: Download BepInEx
+      run: |
+        curl -L -o bepinex.zip https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.2/BepInEx_x64_5.4.23.2.zip
+        powershell -Command "Expand-Archive bepinex.zip -DestinationPath bepinex"
+
+    - name: Compile DLL with real references
       run: |
         & "C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe" `
         -target:library `
         -out:GrappleMod.dll `
         -reference:Assembly-CSharp.dll `
+        -reference:bepinex/BepInEx/core/BepInEx.dll `
         GrappleMod.cs
 
     - name: Upload DLL
