@@ -14,7 +14,14 @@ jobs:
         @"
         namespace UnityEngine
         {
-            public class MonoBehaviour { }
+            public class Object { }
+
+            public class MonoBehaviour : Object { }
+
+            public static class ObjectFinder
+            {
+                public static T[] FindObjectsOfType<T>() { return new T[0]; }
+            }
 
             public static class Input
             {
@@ -29,6 +36,11 @@ jobs:
             public static class Debug
             {
                 public static void Log(string s) { }
+            }
+
+            public static class GameObject
+            {
+                public static T[] FindObjectsOfType<T>() { return new T[0]; }
             }
         }
         "@ | Out-File -Encoding utf8 UnityEngine.cs
