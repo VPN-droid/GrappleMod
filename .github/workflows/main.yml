@@ -9,27 +9,35 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Download BepInEx
+    - name: Download & extract BepInEx
       run: |
         curl -L -o bepinex.zip https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.2/BepInEx_x64_5.4.23.2.zip
         powershell -Command "Expand-Archive bepinex.zip -DestinationPath bepinex"
 
-    - name: Compile DLL
+    - name: List extracted files (DEBUG)
       shell: pwsh
       run: |
-        $bep = "bepinex/BepInEx/core/BepInEx.dll"
+        Write-Host "=== FILE TREE ==="
+        Get-ChildItem -Recurse bepinex | Select-Object FullName
 
-        if (!(Test-Path $bep)) {
-          $bep = "bepinex/BepInEx_x64/BepInEx/core/BepInEx.dll"
+    - name: Compile DLL (use discovered path)
+      shell: pwsh
+      run: |
+        # find the dll reliably
+        $bep = Get-ChildItem -Recurse -Filter BepInEx.dll | Select-Object -First 1
+
+        if (-not $bep) {
+          Write-Error "BepInEx.dll NOT FOUND"
+          exit 1
         }
 
-        Write-Host "Using BepInEx at:" $bep
+        Write-Host "Using BepInEx at:" $bep.FullName
 
         & "C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe" `
         -target:library `
         -out:GrappleMod.dll `
         -reference:Assembly-CSharp.dll `
-        -reference:$bep `
+        -reference:$($bep.FullName) `
         GrappleMod.cs
 
     - name: Upload DLL
