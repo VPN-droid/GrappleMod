@@ -9,22 +9,18 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Download BepInEx
+    - name: Download BepInEx.dll directly
       run: |
-        curl -L -o bepinex.zip https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.2/BepInEx_x64_5.4.23.2.zip
-        powershell -Command "Expand-Archive bepinex.zip -DestinationPath bepinex"
+        curl -L -o BepInEx.dll https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.2/BepInEx.dll
 
-    - name: Compile DLL (fixed path)
+    - name: Compile DLL
       shell: pwsh
       run: |
-        $bep = Get-ChildItem -Recurse -Filter BepInEx.dll | Select-Object -First 1
-        Write-Host "Using BepInEx at:" $bep.FullName
-
         & "C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe" `
         -target:library `
         -out:GrappleMod.dll `
         -reference:Assembly-CSharp.dll `
-        -reference:$($bep.FullName) `
+        -reference:BepInEx.dll `
         GrappleMod.cs
 
     - name: Upload DLL
